@@ -1,0 +1,12 @@
+﻿<!--?xml version="1.0"?-->
+<settings>
+  <filename>/home/rdevita/wg++/output/{{country_name}}/output/guide.xml</filename>
+  <mode>n</mode>
+  <postprocess grab="y" run="y">mdb</postprocess>
+  <logging>off</logging>
+  <user-agent>Mozilla/5.0</user-agent>
+  <retry time-out="5">2</retry>
+  <timespan>1</timespan>
+  <update>i</update>
+  {{xml_entries}}
+</settings>
