@@ -61,3 +61,4 @@ target/
 *.xml
 *.ini
 /template_variables.json
+.settings
