@@ -35,12 +35,15 @@ def create():
         unzip_into_folder(zip_resource)
         channel_folder = os.path.join(os.path.dirname(__file__), 'channels')
         channel_list = generate_file(channel_folder)
+        log.info("I'm writting the file")
+        log.debug(channel_list.values())
         template_vars = {'xml_entries': "\n".join(channel_list.values()),
                          'country_name': country_name}
         configured = configuration.render(template_vars)
         configuration_template = codecs.open(sections['template_name'], 'w', "utf-8")
         configuration_template.write(configured)
         configuration_template.close()
+        log.info("Application finished")
     except HTTPError as e:
         is_404(e.code)
         msg = "Network error.\nCode: {code}\nReason:{reason}"\
