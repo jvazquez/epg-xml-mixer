@@ -1,6 +1,6 @@
 {
 	"country_name": "",
 	"template_name": "WebGrab++.config.xml",
-	"url_webgrab": "http://www.webgrabplus.com/sites/default/files/download/ini/info/zip/{country_name}.zip"
+	"url_webgrab": "http://www.webgrabplus.com/sites/default/files/download/ini/info/zip/{country_name}.zip",
 	"no_country_config": "You need to specify the country name on the tempalte_variables.json file"
 }
