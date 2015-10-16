@@ -32,7 +32,7 @@ def create():
 
         if ' ' in country_name:
             log.error("Please do the following"\
-                      "Download the zip file and place it on the channles folder "\
+                      "Download the zip file and place it on the channels folder "\
                       "If you have any old entry (ini or xml) inside there, delete them "
                       "Unzip the zipfile and then delete the zip file "\
                       "execute python manual_runner.py")
