@@ -57,3 +57,7 @@ docs/_build/
 target/
 .pydevproject
 .project
+/logging.json
+*.xml
+*.ini
+/template_variables.json
