@@ -45,13 +45,11 @@ def create():
         configuration_template.close()
         log.info("Application finished")
     except HTTPError as e:
-        is_404(e.code)
         msg = "Network error.\nCode: {code}\nReason:{reason}"\
             .format(code=e.code, reason=e.reason)
         log.debug(msg)
         log.error(msg)
     except URLError as e:
-        is_404(e.code)
         msg = "Network error.\nCode: {code}\nReason:{reason}"\
             .format(code=e.code, reason=e.reason)
         log.debug(msg)
