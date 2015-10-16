@@ -4,6 +4,7 @@ import codecs
 import json
 import os
 import sys
+import urllib
 import zipfile
 
 from StringIO import StringIO
@@ -29,6 +30,13 @@ def create():
         if country_name is None:
             raise Exception(sections['no_country_config'])
 
+        if ' ' in country_name:
+            log.error("Please do the following"\
+                      "Download the zip file and place it on the channles folder "\
+                      "If you have any old entry (ini or xml) inside there, delete them "
+                      "Unzip the zipfile and then delete the zip file "\
+                      "execute python manual_runner.py")
+            sys.exit()
         url = sections['url_webgrab'].format(country_name=country_name)
         log.debug("Performing step one. Download zip from {url}".format(url=url))
         zip_resource = obtain_zip_file(url)
