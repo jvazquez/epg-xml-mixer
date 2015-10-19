@@ -4,15 +4,15 @@ import codecs
 import json
 import os
 import sys
-import urllib
 import zipfile
 
+from HTMLParser import HTMLParser
 from StringIO import StringIO
 from urllib2 import urlopen, URLError, HTTPError
 
 from logger import logging
 from lxml import etree
-from lxml.etree import tostring, XMLParser
+from lxml.etree import tostring
 
 
 from jinja2 import Environment, FileSystemLoader
@@ -25,30 +25,34 @@ def create():
     try:
         configuration = env.get_template('WebGrab++.config.xml.template')
         sections = json.loads(open('template_variables.json').read())
-        the_entries = {}
+
         country_name = sections['country_name']
         if country_name is None:
             raise Exception(sections['no_country_config'])
 
         if ' ' in country_name:
-            log.error("Please do the following"\
-                      "Download the zip file and place it on the channels folder "\
-                      "If you have any old entry (ini or xml) inside there, delete them "
-                      "Unzip the zipfile and then delete the zip file "\
+            log.error("Please do the following"
+                      "Download the zip file and place it on the channels "
+                      "folder \n If you have any old entry (ini or xml) "
+                      "inside there, delete them "
+                      "Unzip the zipfile and then delete the zip file "
                       "execute python manual_runner.py")
             sys.exit()
         url = sections['url_webgrab'].format(country_name=country_name)
-        log.debug("Performing step one. Download zip from {url}".format(url=url))
+        log.debug("Performing step one. Download zip from {url}"
+                  .format(url=url))
         zip_resource = obtain_zip_file(url)
         unzip_into_folder(zip_resource)
         channel_folder = os.path.join(os.path.dirname(__file__), 'channels')
         channel_list = generate_file(channel_folder)
         log.info("I'm writting the file")
         log.debug(channel_list.values())
+
         template_vars = {'xml_entries': "\n".join(channel_list.values()),
                          'country_name': country_name}
         configured = configuration.render(template_vars)
-        configuration_template = codecs.open(sections['template_name'], 'w', "utf-8")
+        configuration_template = codecs.open(sections['template_name'], 'w',
+                                             'utf8')
         configuration_template.write(configured)
         configuration_template.close()
         log.info("Application finished")
@@ -113,19 +117,22 @@ def generate_file(channel_folder):
 
     all_the_channels = {}
     log.info(channel_folder)
-    parser = etree.XMLParser(recover=True)
+    # parser = etree.XMLParser(recover=True, encoding="utf8")
+    parser = etree.XMLParser()
     for channel_entries in os.listdir(channel_folder):
         target = os.path.join(channel_folder, channel_entries)
         is_xml = target.endswith('.xml')
         if is_xml:
             channel = open(target, 'r').read()
+            # root = etree.parse(target, parser=parser)
             root = etree.fromstring(channel, parser)
             nodes = root.xpath('//channels/channel')
             for node in nodes:
+                # the_id = node.get('xmltv_id').encode('utf8')
                 the_id = node.get('xmltv_id')
                 if the_id not in all_the_channels.keys():
-                    all_the_channels.update({the_id: tostring(node).strip()})
-
+                    name = HTMLParser().unescape(tostring(node).strip())
+                    all_the_channels.update({the_id: name})
     return all_the_channels
 
 

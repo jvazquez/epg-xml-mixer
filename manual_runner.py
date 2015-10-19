@@ -4,16 +4,11 @@ import codecs
 import json
 import os
 import sys
-import urllib
-import zipfile
 
-from StringIO import StringIO
-from urllib2 import urlopen, URLError, HTTPError
+from urllib2 import URLError, HTTPError
 
 from jinja2 import Environment, FileSystemLoader
 from logger import logging
-from lxml import etree
-from lxml.etree import tostring, XMLParser
 
 from runner import generate_file
 log = logging.getLogger('development')
@@ -24,7 +19,6 @@ def create():
     try:
         configuration = env.get_template('WebGrab++.config.xml.template')
         sections = json.loads(open('template_variables.json').read())
-        the_entries = {}
         country_name = sections['country_name']
 
         if country_name is None:
@@ -37,7 +31,8 @@ def create():
         template_vars = {'xml_entries': "\n".join(channel_list.values()),
                          'country_name': country_name}
         configured = configuration.render(template_vars)
-        configuration_template = codecs.open(sections['template_name'], 'w', "utf-8")
+        configuration_template = codecs.open(sections['template_name'], 'w',
+                                             "utf8")
         configuration_template.write(configured)
         configuration_template.close()
         log.info("Application finished")
