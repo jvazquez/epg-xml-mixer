@@ -26,7 +26,7 @@ def create():
 
         channel_folder = os.path.join(os.path.dirname(__file__), 'channels')
         channel_list = generate_file(channel_folder)
-        log.info("I'm writting the file")
+        log.info("\nI'm writting the file\n")
         log.debug(channel_list.values())
         template_vars = {'xml_entries': "\n".join(channel_list.values()),
                          'country_name': country_name}

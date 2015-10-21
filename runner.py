@@ -3,8 +3,11 @@
 import codecs
 import json
 import os
+import pickledb
 import sys
 import zipfile
+
+from collections import OrderedDict
 
 from HTMLParser import HTMLParser
 from StringIO import StringIO
@@ -63,7 +66,7 @@ def create():
         log.error(msg)
     except URLError as e:
         msg = "Network error.\nCode: {code}\nReason:{reason}"\
-            .format(code=e.code, reason=e.reason)
+            .format(reason=e.reason)
         log.debug(msg)
         log.error(msg)
     except IOError as e:
@@ -114,11 +117,12 @@ def _clean_old_entries(channel_folder):
 
 
 def generate_file(channel_folder):
-
     all_the_channels = {}
     log.info(channel_folder)
     # parser = etree.XMLParser(recover=True, encoding="utf8")
     parser = etree.XMLParser()
+    db = pickledb.load('trashit.db', False)
+
     for channel_entries in os.listdir(channel_folder):
         target = os.path.join(channel_folder, channel_entries)
         is_xml = target.endswith('.xml')
@@ -129,11 +133,20 @@ def generate_file(channel_folder):
             nodes = root.xpath('//channels/channel')
             for node in nodes:
                 # the_id = node.get('xmltv_id').encode('utf8')
-                the_id = node.get('xmltv_id')
-                if the_id not in all_the_channels.keys():
-                    name = HTMLParser().unescape(tostring(node).strip())
+                the_id = HTMLParser().unescape(node.get('xmltv_id')).lower()\
+                    .replace(' ', '')
+                found = db.get(the_id)
+
+                if found is None:
+                    # name = HTMLParser().unescape(tostring(node).strip())
+                    name = tostring(node).strip()
                     all_the_channels.update({the_id: name})
-    return all_the_channels
+                    db.set(the_id, True)
+                else:
+                    log.info("%s was found, it won't be added" % the_id)
+    sorted_chans = OrderedDict(sorted(all_the_channels.items(),
+                                      key=lambda t: t[0]))
+    return sorted_chans
 
 
 if __name__ == "__main__":
