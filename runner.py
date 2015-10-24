@@ -8,7 +8,7 @@ import zipfile
 
 from StringIO import StringIO
 from urllib2 import urlopen, URLError, HTTPError
-
+from collections import OrderedDict
 from logger import logging
 from lxml import etree
 from lxml.etree import tostring, XMLParser
@@ -37,7 +37,9 @@ def create():
         channel_list = generate_file(channel_folder)
         log.info("I'm writting the file")
         log.debug(channel_list.values())
-        template_vars = {'xml_entries': "\n".join(channel_list.values()),
+        ordered_channels = OrderedDict(sorted(channel_list.items(),
+                                              key=lambda t: t[0]))
+        template_vars = {'xml_entries': "\n".join(ordered_channels.values()),
                          'country_name': country_name}
         configured = configuration.render(template_vars)
         configuration_template = codecs.open(sections['template_name'], 'w', "utf-8")
